@@ -14,7 +14,7 @@ jobs:
     - name: Helm tool installer
       uses: Azure/setup-helm@v1
       with:
-        version: 'latest' # default is latest
+        version: 'v3.1.0'
 
     - name: Output Helm version
       run: helm version
