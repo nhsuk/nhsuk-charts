@@ -1,0 +1,23 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Helm tool installer
+      uses: Azure/setup-helm@v1
+      with:
+        version: 'latest' # default is latest
+
+    - name: Output Helm version
+      run: helm version
+
+    - name: Lint chart
+      run: helm lint development/tester
