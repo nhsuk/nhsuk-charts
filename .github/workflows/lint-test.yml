@@ -11,12 +11,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Lint charts
-      id: lint
-      uses: helm/chart-testing-action@v1.0.0-alpha.3
+    - name: Install Helm 3
+      uses: Azure/setup-helm@v1
       with:
-        command: lint
-        image: quay.io/helmpack/chart-testing:v3.0.0-beta.1
+        version: 'v3.1.0'
+
+    - name: Lint charts
+      run: ls -d charts/* | xargs helm lint
 
     - name: Create kind cluster
       uses: helm/kind-action@v1.0.0-alpha.3
@@ -25,8 +26,6 @@ jobs:
       # Only build a kind cluster if there are chart changes to test.
       if: steps.lint.outputs.changed == 'true'
 
-    - name: Run chart-testing (install)
-      uses: helm/chart-testing-action@v1.0.0-alpha.3
-      with:
-        command: install
-        image: quay.io/helmpack/chart-testing:v3.0.0-beta.1
+    - name: Install charts
+      run: ls -d charts/* | xargs helm install -g
+      if: steps.lint.outputs.changed == 'true'
