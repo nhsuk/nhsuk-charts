@@ -1,0 +1,28 @@
+name: Update chart repository
+
+on:
+  push:
+    # TODO: Uncomment after testing
+    # branches:
+    #   - master
+
+jobs:
+  update_chart_repo:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Package and push to chart repo
+      # acr= needs updating after testing
+      run: |
+        az configure --defaults acr=shuntacrdev
+        az acr helm repo add
+        ls -d charts/* | xargs helm package
+        ls *tgz | xargs az acr helm push
