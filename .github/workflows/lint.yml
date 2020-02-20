@@ -19,5 +19,5 @@ jobs:
     - name: Output Helm version
       run: helm version
 
-    - name: Lint chart
-      run: helm lint development/tester
+    - name: Lint development charts
+      run: ls -d development/* | xargs helm lint
