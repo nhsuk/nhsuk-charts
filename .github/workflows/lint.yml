@@ -21,3 +21,6 @@ jobs:
 
     - name: Lint development charts
       run: ls -d development/* | xargs helm lint
+
+    - name: Install development charts
+      run: ls -d development/* | xargs helm install -g
