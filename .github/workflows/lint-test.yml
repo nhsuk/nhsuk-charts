@@ -33,7 +33,10 @@ jobs:
 
     - name: Save charts locally and push to remote registry
       run: |
-        az acr login --name nhsuk
         export HELM_EXPERIMENTAL_OCI=1
+        az acr login --name nhsuk
+        az account list
+        az acr list
         ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
+        helm chart list
         ls -d charts/* | xargs -I {} -- sh -c 'helm chart push nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
