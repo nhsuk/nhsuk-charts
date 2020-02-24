@@ -1,4 +1,4 @@
-name: Update chart repository
+name: Merge to master CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     #   - master
 
 jobs:
-  update_chart_repo:
+  lint_test_package_development:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,10 +24,26 @@ jobs:
       with:
         version: 'v3.1.0'
 
-    - name: Package and push to chart repo
-      # acr= needs updating after testing
+    - name: Lint charts
+      run: ls -d charts/* | xargs helm lint
+
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.0.0-alpha.3
+      with:
+        install_local_path_provisioner: true
+
+    - name: Install charts
+      run: ls -d charts/* | xargs helm install -g
+
+    - name: Login to ACR and allow Helm to push repos
       run: |
-        az configure --defaults acr=shuntacrdev
-        az acr helm repo add
-        ls -d charts/* | xargs helm package
-        ls *tgz | xargs az acr helm push
+        az acr login --name nhsuk
+        export HELM_EXPERIMENTAL_OCI=1
+
+    - name: Save charts in master to local registry cache
+      run: |
+        ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)'
+
+    - name: Push charts in master to remote registry
+      run: |
+        ls -d charts/* | xargs -I {} -- sh -c 'helm chart push nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)'

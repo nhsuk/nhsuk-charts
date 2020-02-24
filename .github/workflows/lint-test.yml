@@ -1,15 +1,19 @@
-name: CI
+name: Chart Dev CI
 
-on: [pull_request, release]
+on: [pull_request]
 
 jobs:
-  build:
-
+  lint_test_package_development:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Install Helm 3
       uses: Azure/setup-helm@v1
@@ -26,3 +30,16 @@ jobs:
 
     - name: Install charts
       run: ls -d charts/* | xargs helm install -g
+
+    - name: Login to ACR and allow Helm to push repos
+      run: |
+        az acr login --name nhsuk
+        export HELM_EXPERIMENTAL_OCI=1
+
+    - name: Save charts in development to local registry cache
+      run: |
+        ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
+
+    - name: Push charts in development to remote registry
+      run: |
+        ls -d charts/* | xargs -I {} -- sh -c 'helm chart push nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
