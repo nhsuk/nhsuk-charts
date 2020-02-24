@@ -35,15 +35,9 @@ jobs:
     - name: Install charts
       run: ls -d charts/* | xargs helm install -g
 
-    - name: Login to ACR and allow Helm to push repos
+    - name: Save charts locally and push to remote registry
       run: |
         az acr login --name nhsuk
         export HELM_EXPERIMENTAL_OCI=1
-
-    - name: Save charts in master to local registry cache
-      run: |
         ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)'
-
-    - name: Push charts in master to remote registry
-      run: |
         ls -d charts/* | xargs -I {} -- sh -c 'helm chart push nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)'
