@@ -36,6 +36,7 @@ jobs:
         export HELM_EXPERIMENTAL_OCI=1
         helm version
         az acr login --name nhsuk
+        az acr helm repo add
 
         # test pushing specific chart
         helm --debug chart save ./charts/tester/ nhsuk.azurecr.io/helm/tester-direct:latest
