@@ -20,16 +20,16 @@ jobs:
       with:
         version: 'v3.1.0'
 
-    - name: Lint charts
-      run: ls -d charts/* | xargs helm lint
+    # - name: Lint charts
+    #   run: ls -d charts/* | xargs helm lint
 
-    - name: Create kind cluster
-      uses: helm/kind-action@v1.0.0-alpha.3
-      with:
-        install_local_path_provisioner: true
+    # - name: Create kind cluster
+    #   uses: helm/kind-action@v1.0.0-alpha.3
+      # with:
+      #   install_local_path_provisioner: true
 
-    - name: Install charts
-      run: ls -d charts/* | xargs helm install -g
+    # - name: Install charts
+    #   run: ls -d charts/* | xargs helm install -g
 
     - name: Save charts locally and push to remote registry
       run: |
