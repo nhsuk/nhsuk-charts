@@ -20,34 +20,33 @@ jobs:
       with:
         version: 'v3.1.0'
 
-    # - name: Lint charts
-    #   run: ls -d charts/* | xargs helm lint
+    - name: Lint charts
+      run: ls -d charts/* | xargs helm lint
 
-    # - name: Create kind cluster
-    #   uses: helm/kind-action@v1.0.0-alpha.3
-      # with:
-      #   install_local_path_provisioner: true
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.0.0-alpha.3
+      with:
+        install_local_path_provisioner: true
 
-    # - name: Install charts
-    #   run: ls -d charts/* | xargs helm install -g
+    - name: Install charts
+      run: ls -d charts/* | xargs helm install -g
 
-    - name: Save charts locally and push to remote registry
+    - name: Configure az acr for nhsuk repo
       run: |
-        export HELM_EXPERIMENTAL_OCI=1
-        helm version
+        # export HELM_EXPERIMENTAL_OCI=1
+        # helm version
         az configure --defaults acr=nhsuk
         az acr login
         az acr helm repo add
 
-        # test pushing specific chart
-        # helm --debug chart save ./charts/tester/ nhsuk.azurecr.io/helm/tester-direct:latest
-        # helm --debug chart push nhsuk.azurecr.io/helm/tester-direct:latest
-
+    - name: Save charts locally
+      run: |
         # package the charts
         ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
-        # check if chart exists and only push if it doesn't
+
+    - name: Push new charts to remote registry
+      run: |
         for chart in *.tgz; do
-          # helm show chart $chart | grep ^name: | cut -d ' ' -f 2 | xargs -I name az acr helm show name --version $(
           az acr helm show $(echo ${chart%.*} | cut -d '-' -f 1) --version $(echo ${chart%.*} | cut -d '-' -f 2)
           retval=$?
           if [ $retval -eq 0 ]; then
@@ -57,7 +56,3 @@ jobs:
             az acr helm push $chart --verbose
           fi
         done
-        # ls *.tgz | xargs -I chart az acr helm push chart --force
-
-        # ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
-        # ls -d charts/* | xargs -I {} -- sh -c 'helm chart push nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
