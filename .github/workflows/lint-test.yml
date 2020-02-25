@@ -35,7 +35,8 @@ jobs:
       run: |
         export HELM_EXPERIMENTAL_OCI=1
         helm version
-        az acr login --name nhsuk
+        az configure --default acr=nhsuk
+        az acr login
         az acr helm repo add
 
         # test pushing specific chart
