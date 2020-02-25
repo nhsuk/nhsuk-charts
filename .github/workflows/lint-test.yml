@@ -45,7 +45,19 @@ jobs:
 
         # package the charts
         ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
-        ls *.tgz | xargs -I chart az acr helm push chart --force
+        # check if chart exists and only push if it doesn't
+        for chart in *.tgz; do
+          # helm show chart $chart | grep ^name: | cut -d ' ' -f 2 | xargs -I name az acr helm show name --version $(
+          az acr helm show $(echo ${chart%.*} | cut -d '-' -f 1) --version $(echo ${chart%.*} | cut -d '-' -f 2)
+          retval=$?
+          if [ $retval -eq 0 ]; then
+            echo "$chart exists, not going to push again."
+          elif [ $retval -eq 1 ]; then
+            echo "Error response - indicates $chart doesn't exist, will attempt to push to repo."
+            az acr helm push $chart --verbose
+          fi
+        done
+        # ls *.tgz | xargs -I chart az acr helm push chart --force
 
         # ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
         # ls -d charts/* | xargs -I {} -- sh -c 'helm chart push nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
