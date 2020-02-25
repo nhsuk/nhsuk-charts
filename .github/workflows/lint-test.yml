@@ -38,8 +38,8 @@ jobs:
         az acr login --name nhsuk
 
         # test pushing specific chart
-        helm chart save ./charts/tester/ nhsuk.azurecr.io/helm/tester-direct:latest
-        helm chart push nhsuk.azurecr.io/helm/tester-direct:latest
+        helm --debug chart save ./charts/tester/ nhsuk.azurecr.io/helm/tester-direct:latest
+        helm --debug chart push nhsuk.azurecr.io/helm/tester-direct:latest
 
         az account show
         ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
