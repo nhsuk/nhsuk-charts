@@ -33,15 +33,12 @@ jobs:
 
     - name: Configure az acr for nhsuk repo
       run: |
-        # export HELM_EXPERIMENTAL_OCI=1
-        # helm version
         az configure --defaults acr=nhsuk
         az acr login
         az acr helm repo add
 
-    - name: Save charts locally
+    - name: Package charts
       run: |
-        # package the charts
         ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
 
     - name: Push new charts to remote registry
