@@ -29,7 +29,7 @@ jobs:
         install_local_path_provisioner: true
 
     - name: Install charts
-      run: ls -d charts/* | xargs helm install -g
+      run: ls -d charts/* | xargs -I chart helm install -g chart
 
     - name: Configure az acr for nhsuk repo
       run: |
