@@ -10,11 +10,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Azure Login
-      uses: Azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
     - name: Install Helm 3
       uses: Azure/setup-helm@v1
       with:
@@ -31,7 +26,10 @@ jobs:
     - name: Install charts
       run: ls -d charts/* | xargs helm install -g
 
-    - name: Save charts locally and push to remote registry
+    - name: Login to Azure, save charts locally and push to remote registry
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
       run: |
         export HELM_EXPERIMENTAL_OCI=1
         az acr login --name nhsuk

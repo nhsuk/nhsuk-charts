@@ -7,7 +7,7 @@ on:
     #   - master
 
 jobs:
-  lint_test_package_development:
+  lint_test_package:
     runs-on: ubuntu-latest
 
     steps:
