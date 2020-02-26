@@ -48,7 +48,7 @@ jobs:
           version=$(helm show chart $chart | grep ^version: | cut -d ' ' -f 2)
 
           echo "Running: 'az acr helm show $chartname --version $version'"
-          if [ $(az acr helm show $chartname --version $version) -eq 0 ]; then
+          if [ $(az acr helm show "$chartname" --version $version) -eq 0 ]; then
             echo "$chart exists, not going to push again."
           else
             echo "Error response - indicates $chart doesn't exist, will attempt to push to repo."
