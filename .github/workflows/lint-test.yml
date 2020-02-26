@@ -44,11 +44,9 @@ jobs:
     - name: Push new charts to remote registry
       run: |
         for chart in *.tgz; do
-          az acr helm show $(echo ${chart%.*} | cut -d '-' -f 1) --version $(echo ${chart%.*} | cut -d '-' -f 2)
-          retval=$?
-          if [ $retval -eq 0 ]; then
+          if [ $(az acr helm show $(echo ${chart%.*} | cut -d '-' -f 1) --version $(echo ${chart%.*} | cut -d '-' -f 2) -eq 0 ]; then
             echo "$chart exists, not going to push again."
-          elif [ $retval -eq 1 ]; then
+          else
             echo "Error response - indicates $chart doesn't exist, will attempt to push to repo."
             az acr helm push $chart --verbose
           fi
