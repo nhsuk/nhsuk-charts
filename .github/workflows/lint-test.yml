@@ -20,16 +20,16 @@ jobs:
       with:
         version: 'v3.1.0'
 
-    - name: Lint charts
-      run: ls -d charts/* | xargs helm lint
+    # - name: Lint charts
+    #   run: ls -d charts/* | xargs helm lint
 
-    - name: Create kind cluster
-      uses: helm/kind-action@v1.0.0-alpha.3
-      with:
-        install_local_path_provisioner: true
+    # - name: Create kind cluster
+    #   uses: helm/kind-action@v1.0.0-alpha.3
+    #   with:
+    #     install_local_path_provisioner: true
 
-    - name: Install charts
-      run: ls -d charts/* | xargs -I chart helm install -g chart
+    # - name: Install charts
+    #   run: ls -d charts/* | xargs -I chart helm install -g chart
 
     - name: Configure az acr for nhsuk repo
       run: |
@@ -37,9 +37,9 @@ jobs:
         az acr login
         az acr helm repo add
 
-    - name: Package charts
-      run: |
-        ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
+    # - name: Package charts
+    #   run: |
+    #     ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
 
     - name: Push new charts to remote registry
       run: |
@@ -47,6 +47,8 @@ jobs:
           filename=$(echo ${chart%.*})
           chartname=$(echo $filename | cut -d '-' -f 1)
           version=$(echo $filename | cut -d '-' -f 2)
+
+          echo "Running: 'az acr helm show $chartname --version $version'"
           if [ $(az acr helm show $chartname --version $version) -eq 0 ]; then
             echo "$chart exists, not going to push again."
           else
