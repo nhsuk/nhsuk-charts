@@ -37,9 +37,9 @@ jobs:
         az acr login
         az acr helm repo add
 
-    # - name: Package charts
-    #   run: |
-    #     ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
+    - name: Package charts
+      run: |
+        ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
 
     - name: Push new charts to remote registry
       run: |
