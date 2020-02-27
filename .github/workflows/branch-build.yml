@@ -1,0 +1,32 @@
+name: Build
+
+on: [pull_request]
+
+jobs:
+  lint_test_package_development:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Install Helm 3
+      uses: Azure/setup-helm@v1
+      with:
+        version: 'v3.1.0'
+
+    - name: Lint charts
+      run: ls -d charts/* | xargs helm lint
+
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.0.0-alpha.3
+      with:
+        install_local_path_provisioner: true
+
+    - name: Install charts
+      run: ls -d charts/* | xargs -I chart helm install -g chart
