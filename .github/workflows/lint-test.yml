@@ -1,4 +1,4 @@
-name: Chart Dev CI
+name: Lint and test
 
 on: [pull_request]
 
@@ -20,27 +20,13 @@ jobs:
       with:
         version: 'v3.1.0'
 
-    # - name: Lint charts
-    #   run: ls -d charts/* | xargs helm lint
+    - name: Lint charts
+      run: ls -d charts/* | xargs helm lint
 
-    # - name: Create kind cluster
-    #   uses: helm/kind-action@v1.0.0-alpha.3
-    #   with:
-    #     install_local_path_provisioner: true
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.0.0-alpha.3
+      with:
+        install_local_path_provisioner: true
 
-    # - name: Install charts
-    #   run: ls -d charts/* | xargs -I chart helm install -g chart
-
-    - name: Configure az acr for nhsuk repo
-      run: |
-        az configure --defaults acr=nhsuk
-        az acr login
-        az acr helm repo add
-
-    - name: Package charts
-      run: |
-        ls -d charts/* | xargs -I {} -- sh -c 'helm package ./{} --version $(helm show chart {} | grep version | cut -d " " -f 2)-$(git rev-parse --short HEAD:./{})'
-
-    - name: Push new charts to remote registry
-      run: |
-        ./scripts/push-chart.sh
+    - name: Install charts
+      run: ls -d charts/* | xargs -I chart helm install -g chart

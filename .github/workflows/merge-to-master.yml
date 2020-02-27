@@ -1,4 +1,4 @@
-name: Merge to master CI
+name: Lint, test and deploy
 
 on:
   push:
@@ -33,11 +33,18 @@ jobs:
         install_local_path_provisioner: true
 
     - name: Install charts
-      run: ls -d charts/* | xargs helm install -g
+      run: ls -d charts/* | xargs -I chart helm install -g chart
 
-    - name: Save charts locally and push to remote registry
+    - name: Configure az acr for nhsuk repo
       run: |
-        az acr login --name nhsuk
-        export HELM_EXPERIMENTAL_OCI=1
-        ls -d charts/* | xargs -I {} -- sh -c 'helm chart save ./{} nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)'
-        ls -d charts/* | xargs -I {} -- sh -c 'helm chart push nhsuk.azurecr.io/helm/$(basename {}):$(helm show chart {} | grep version | cut -d " " -f 2)'
+        az configure --defaults acr=nhsuk
+        az acr login
+        az acr helm repo add
+
+    - name: Package changed/new chart(s)
+      run: |
+        git diff master HEAD~1 --name-only ./charts | cut -d / -f 1,2 | uniq | xargs helm package
+
+    - name: Push new charts to remote registry
+      run: |
+        ls *.tgz | xargs -I chart az acr helm push chart --verbose
