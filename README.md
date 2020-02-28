@@ -3,32 +3,39 @@
 [![chart_build](https://github.com/nhsuk/nhsuk-charts/workflows/chart_build/badge.svg)](https://github.com/nhsuk/nhsuk-charts/actions?query=workflow%3Achart_build)
 [![chart_push](https://github.com/nhsuk/nhsuk-charts/workflows/chart_push/badge.svg)](https://github.com/nhsuk/nhsuk-charts/actions?query=workflow%3Achart_push)
 
-> A repository for storing and developing Helm charts for the NHSUK program.
+> A repository for storing and developing Helm charts used by the NHSUK program.
 
 ## Repository structure
 
 The repository is organised into a single directory - [charts](./charts).
 
 `charts` contains all of the charts regardless of their development state.
-Other chart repositories split the charts into (typically) two directories, one
+Other chart repositories split charts into (typically) two directories, one
 for 'stable' charts and another for charts not yet deemed to be stable i.e.
-still in development e.g. [Helm charts](https://github.com/helm/charts),
-[Bitnami charts](https://github.com/bitnami/charts) and
-[AWS EKS Charts](https://github.com/aws/eks-charts) all use this pattern.
-However, for ease of use this method has not been used for this repository. It
-may be adopted in future as the number of charts increases and the number of
-users and use cases expand.
+still in development examples include:
+* [Helm charts](https://github.com/helm/charts),
+* [Bitnami charts](https://github.com/bitnami/charts)
+* [AWS EKS Charts](https://github.com/aws/eks-charts)
+
+However, for ease of use this method has not been implemented with this
+repository. It may be adopted in the future as the number of charts, users and
+use cases increase.
 
 ## Chart development
 
-Rather than charts beginning life within an `incubator` directory they start
-within the `charts` directory. However, before a change to the repo is merged
-into `master` the chart will have needed to achieve some level of quality and
-stability. Currently that criteria is, broader speaking, the chart has
-succeeded to be:
+If a new chart is to be added or changes need to be made to an existing chart
+the first step is to create a branch. Once the chart has been developed on the
+branch it can be merged into master.
+
+As can be seen in the [workflow configurations](./github/workflows) once a PR
+has been created the charts contained within will be:
 * linted
 * installed into a [kind cluster](https://kind.sigs.k8s.io/)
 
+In order for a PR to be eligible to be merged into master these checks must
+have been successful.
+
 Once merged into `master` the chart is again linted and installed into a kind
 cluster before it is pushed to the Helm repository, an instance of an
-[Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/).
+[Azure Container Registry](https://docs.microsoft.com/en-us/azure/container-registry/)
+located at [nhsuk.azurecr.io](https://nhsuk.azurecr.io).
