@@ -1,7 +1,7 @@
 # NHSUK (Helm) Charts
 
-![build_chart](https://github.com/nhsuk/nhsuk-charts/workflows/build_chart/badge.svg)
-![push_chart](https://github.com/nhsuk/nhsuk-charts/workflows/push_chart/badge.svg)
+![chart_build](https://github.com/nhsuk/nhsuk-charts/workflows/chart_build/badge.svg)
+![chart_push](https://github.com/nhsuk/nhsuk-charts/workflows/chart_push/badge.svg)
 
 > A repository for storing and developing Helm charts for the NHSUK program.
 
