@@ -26,7 +26,8 @@ jobs:
         version: 'v3.1.0'
 
     - name: Lint charts
-      run: ls -d charts/* | xargs helm lint
+      run: |
+        ls -d charts/* | xargs helm lint
 
     - name: Create kind cluster
       uses: helm/kind-action@v1.0.0-alpha.3
@@ -34,7 +35,8 @@ jobs:
         install_local_path_provisioner: true
 
     - name: Install charts
-      run: ls -d charts/* | xargs -I chart helm install -g chart
+      run: |
+        ls -d charts/* | xargs -I chart helm install -g chart
 
     - name: Configure az acr for nhsuk repo
       run: |
@@ -49,3 +51,7 @@ jobs:
     - name: Push changed/new chart(s) to registry
       run: |
         ./scripts/push-charts.sh
+
+    - name: Delete removed chart(s) from registry
+      run: |
+        ./scripts/delete-charts.sh
