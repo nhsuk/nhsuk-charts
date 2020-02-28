@@ -16,4 +16,4 @@ for chart in $(git diff HEAD~1 --name-only ./charts | cut -d / -f 2 | uniq); do
   fi
 done
 
-echo "Deleted charts:" "${deleted_charts[@]-NONE}"
+echo "Deleted charts: " "${deleted_charts[@]-NONE}"

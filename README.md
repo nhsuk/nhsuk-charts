@@ -43,5 +43,5 @@ located at [nhsuk.azurecr.io](https://nhsuk.azurecr.io).
 ## Notes
 
 The name of the chart must be the same as the name of the directory it is
-container in. If this is not the case the step to delete charts that have been
-removed will not work as intended.
+contained in. If this is not the case the build will fail with a corresponding
+message.
