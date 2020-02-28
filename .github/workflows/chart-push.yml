@@ -12,10 +12,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - run: |
-        git fetch --no-tags --prune --depth=1 origin master
-        git checkout master
-        git checkout -
 
     - name: Azure Login
       uses: Azure/login@v1
@@ -46,7 +42,7 @@ jobs:
 
     - name: Package changed/new chart(s)
       run: |
-        git diff master --name-only ./charts | cut -d / -f 1,2 | uniq | xargs helm package
+        git diff HEAD~1 --name-only ./charts | cut -d / -f 1,2 | uniq | xargs helm package
 
     - name: Push changed/new chart(s) to registry
       run: |
