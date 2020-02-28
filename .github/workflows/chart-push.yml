@@ -13,7 +13,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        fetch-depth: 2
+        fetch-depth: 0
 
     - name: Azure Login
       uses: Azure/login@v1
@@ -42,10 +42,10 @@ jobs:
         az acr login
         az acr helm repo add
 
-    - name: Package changed/new chart(s)
+    - name: Package charts
       run: |
-        git diff HEAD~1 --name-only ./charts | cut -d / -f 1,2 | uniq | xargs helm package
+        ls -d charts/* | xargs helm package
 
     - name: Push changed/new chart(s) to registry
       run: |
-        ls *.tgz | xargs -I chart az acr helm push chart --verbose
+        ./scripts/push-charts.sh
