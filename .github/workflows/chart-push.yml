@@ -49,3 +49,7 @@ jobs:
     - name: Push changed/new chart(s) to registry
       run: |
         ./scripts/push-charts.sh
+
+    - name: Delete removed chart(s) from registry
+      run: |
+        ./scripts/delete-charts.sh
