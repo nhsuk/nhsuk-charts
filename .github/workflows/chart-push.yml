@@ -1,4 +1,4 @@
-name: Chart push
+name: chart_push
 
 on:
   push:
